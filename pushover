@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [[ -z "${PUSH_OVER_TOKEN}" || -z "${PUSH_OVER_USER}" ]]; then
+  echo "Required credentials <PUSH_OVER_TOKEN|PUSH_OVER_USER"
+  exit 1
+fi
+
+curl -s \
+  -F "token=$PUSH_OVER_TOKEN" \
+  -F "user=$PUSH_OVER_USER" \
+  --form-string "message=[Monit] $MONIT_SERVICE - \
+  $MONIT_DESCRIPTION" https://api.pushover.net/1/messages.json

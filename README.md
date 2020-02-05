@@ -28,14 +28,18 @@ docker run -it \
   -p 2812:2812 \
   -v $(pwd)/monitrc:/etc/monitrc \
   -e "SLACK_URL=<SLACK_URL>" \
+  -e "PUSH_OVER_TOKEN=<PUSH_OVER_TOKEN>" \
+  -e "PUSH_OVER_USER=<PUSH_OVER_USER>" \
   diogopms/monit-docker-kubernetes
 ```
 
-### Example monitrc
+### Example monitrc (Slack)
 
 ```
 set daemon 20
 set log syslog
+# Web interface
+# set httpd port 2812 and allow admin:monit
 
 check host <Monitor name> with address <URL>
   if failed
@@ -48,6 +52,31 @@ check host <Monitor name> with address <URL>
     else if succeeded then exec "/bin/slack"
 EOF
 ```
+
+### Example monitrc (Pushover)
+
+```
+set daemon 20
+set log syslog
+# Web interface
+# set httpd port 2812 and allow admin:monit
+
+check host <Monitor name> with address <URL>
+  if failed
+      port 443 protocol https
+      request /route
+      status = 400
+      content = "XPTO"
+      for 2 cycles
+  then exec "/bin/pushover"
+    else if succeeded then exec "/bin/pushover"
+EOF
+```
+
+### Supported notifications
+
+- [Slack](https://www.slack.com)
+- [Pushover](https://pushover.net)
 
 ### Troubleshooting
 
