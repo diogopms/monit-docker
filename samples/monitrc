@@ -1,0 +1,17 @@
+set daemon 15
+set log syslog
+set httpd port 2812 and allow admin:monit
+
+check host google.com with address google.com
+  every 1 cycles
+  if failed
+      port 443 protocol https
+      request /
+      status = 200
+      content = "google"
+      for 2 cycles
+  then exec "/bin/slack"
+    else if succeeded then exec "/bin/slack"
+  then exec "/bin/pushover"
+    else if succeeded then exec "/bin/pushover"
+EOF

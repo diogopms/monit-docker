@@ -1,6 +1,6 @@
 # Monit - Docker/Kubernetes - UNIX Systems Management
 
-Run Monit inside docker.
+Run Monit inside docker ([Examples/Samples](./samples/README.md) )
 
 [![Monit](https://mmonit.com/monit/img/logo.png)](https://mmonit.com/monit/)
 
