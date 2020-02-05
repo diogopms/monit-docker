@@ -9,6 +9,7 @@ ENV MONIT_VERSION=5.26.0 \
     PATH=$PATH:/opt/monit/bin
 
 COPY slack /bin/slack
+COPY pushover /bin/pushover
 
 # Compile and install monit
 RUN \
@@ -22,5 +23,9 @@ RUN \
     rm -rf /var/cache/apk/* /opt/src
 
 EXPOSE 2812
+
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN ln -s /usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["monit", "-I", "-B"]

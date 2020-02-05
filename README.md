@@ -17,6 +17,15 @@ Docker documentation: https://docs.docker.com/
 - build docker image `docker build -t monit .`
 - start monit: `docker run -ti -p 2812:2812 -v $(pwd)/monitrc:/etc/monitrc monit`
 
+## ENV VARS
+
+| ENVs            	| Description                                              	|
+|-----------------	|----------------------------------------------------------	|
+| SLACK_URL       	| Webhook url for slack notifications (required for slack) 	|
+| PUSH_OVER_TOKEN 	| Push over api token (required for pushover)              	|
+| PUSH_OVER_USER  	| Push over api user (requiredfor pushover)                	|
+| DEBUG           	| If set with 1 it will put monit in verbose mode          	|
+
 ### Docker Hub image
 
 - pull docker image from docker hub: `docker pull diogopms/monit-docker-kubernetes`
@@ -24,12 +33,23 @@ Docker documentation: https://docs.docker.com/
 - create a docker container:
 
 ```
+#Normal mode (support slack and pushover)
 docker run -it \
   -p 2812:2812 \
   -v $(pwd)/monitrc:/etc/monitrc \
   -e "SLACK_URL=<SLACK_URL>" \
   -e "PUSH_OVER_TOKEN=<PUSH_OVER_TOKEN>" \
   -e "PUSH_OVER_USER=<PUSH_OVER_USER>" \
+  diogopms/monit-docker-kubernetes
+
+#Debug mode
+docker run -it \
+  -p 2812:2812 \
+  -v $(pwd)/monitrc:/etc/monitrc \
+  -e "SLACK_URL=<SLACK_URL>" \
+  -e "PUSH_OVER_TOKEN=<PUSH_OVER_TOKEN>" \
+  -e "PUSH_OVER_USER=<PUSH_OVER_USER>" \
+  -e "DEBUG=1" \
   diogopms/monit-docker-kubernetes
 ```
 
@@ -77,6 +97,8 @@ EOF
 
 - [Slack](https://www.slack.com)
 - [Pushover](https://pushover.net)
+
+### Kubernetes
 
 ### Troubleshooting
 
