@@ -28,4 +28,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s /usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["monit", "-I", "-B"]
+CMD ["monit", "-I", "-B", "-c", "/etc/monitrc_root"]
