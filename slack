@@ -23,3 +23,5 @@ PAYLOAD="{
 }"
 
 curl -s -X POST --data-urlencode "payload=$PAYLOAD" $SLACK_URL
+
+exit 0

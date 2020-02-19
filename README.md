@@ -61,12 +61,11 @@ set log syslog
 # Web interface
 # set httpd port 2812 and allow admin:monit
 
-check host <Monitor name> with address <URL>
+check host www.google.com with address www.google.com
   if failed
       port 443 protocol https
-      request /route
-      status = 400
-      content = "XPTO"
+      request /
+      status = 200
       for 2 cycles
   then exec "/bin/slack"
     else if succeeded then exec "/bin/slack"
