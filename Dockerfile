@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.11.3
 
 LABEL maintainer="Diogo Serrano <info@diogoserrano.com>"
 
@@ -19,7 +19,7 @@ RUN \
     cd /opt/src/monit-${MONIT_VERSION} && \
     ./configure --prefix=${MONIT_HOME} --without-pam && \
     make && make install && \
-    apk del gcc musl-dev make libressl-dev file zlib-dev && \
+    apk del gcc musl-dev make file zlib-dev && \
     rm -rf /var/cache/apk/* /opt/src
 
 EXPOSE 2812
