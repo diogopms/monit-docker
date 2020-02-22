@@ -1,10 +1,15 @@
 # Monit - Docker/Kubernetes - UNIX Systems Management
 
-Run Monit inside docker ([Examples/Samples](./samples/README.md) )
+Run Monit inside docker ( )
 
 [![Monit](https://mmonit.com/monit/img/logo.png)](https://mmonit.com/monit/)
 
 [Monit](https://mmonit.com/monit/) is a free open source utility for managing and monitoring, processes, programs, files, directories and filesystems on a UNIX system. Monit conducts automatic maintenance and repair and can execute meaningful causal actions in error situations.
+
+## Supported architectures
+
+- amd64
+- arm32v6 (Raspberry Pi) [diogopms/monit-docker-kubernetes:arm32v6-latest](https://hub.docker.com/r/diogopms/monit-docker-kubernetes/tags?page=1&name=arm)
 
 ## Docker setup
 
@@ -80,12 +85,11 @@ set log syslog
 # Web interface
 # set httpd port 2812 and allow admin:monit
 
-check host <Monitor name> with address <URL>
+check host www.google.com with address www.google.com
   if failed
       port 443 protocol https
-      request /route
-      status = 400
-      content = "XPTO"
+      request /
+      status = 200
       for 2 cycles
   then exec "/bin/pushover"
     else if succeeded then exec "/bin/pushover"
