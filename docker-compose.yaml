@@ -1,0 +1,15 @@
+---
+version: "3.8"
+services:
+  monit:
+    image: diogopms/monit-docker-kubernetes:latest
+    container_name: monit
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Lisbon
+    volumes:
+      - ./monitrc:/etc/monitrc
+    ports:
+      - 2812:2812
+    restart: unless-stopped
