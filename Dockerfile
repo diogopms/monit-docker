@@ -1,4 +1,4 @@
-FROM alpine:3.21.0
+FROM alpine:3.23.3
 
 LABEL maintainer="Diogo Serrano <info@diogoserrano.com>"
 
