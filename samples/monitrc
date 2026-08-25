@@ -11,4 +11,3 @@ check host www.google.com with address www.google.com
       for 2 cycles
   then exec "/bin/slack"
     else if succeeded then exec "/bin/slack"
-EOF

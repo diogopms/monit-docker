@@ -1,0 +1,9 @@
+.git
+.github
+.dockerignore
+Dockerfile
+docker-compose.yaml
+LICENSE
+README.md
+monitrc
+samples/

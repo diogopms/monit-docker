@@ -1,27 +1,29 @@
-# Need help?
+# Samples
 
-## Normal mode
+`monitrc` in this directory is a minimal working config: it checks
+https://www.google.com and notifies Slack on state changes.
+
+## Run it
 
 ```sh
 docker run -it \
   -p 2812:2812 \
-  -v $(pwd)/monitrc:/etc/monitrc \
+  -v "$(pwd)/monitrc:/etc/monitrc" \
   -e "SLACK_URL=<SLACK_URL>" \
   -e "PUSH_OVER_TOKEN=<PUSH_OVER_TOKEN>" \
   -e "PUSH_OVER_USER=<PUSH_OVER_USER>" \
-  -e "DEBUG=1" \
-  diogopms/monit-docker-kubernetes
+  ghcr.io/diogopms/monit-docker
 ```
 
-## Debug
+## Debug mode
+
+Add `-e "DEBUG=1"` to run Monit in verbose mode:
 
 ```sh
 docker run -it \
   -p 2812:2812 \
-  -v $(pwd)/monitrc:/etc/monitrc \
+  -v "$(pwd)/monitrc:/etc/monitrc" \
   -e "SLACK_URL=<SLACK_URL>" \
-  -e "PUSH_OVER_TOKEN=<PUSH_OVER_TOKEN>" \
-  -e "PUSH_OVER_USER=<PUSH_OVER_USER>" \
-  -e "DEBUG=0" \
-  diogopms/monit-docker-kubernetes
+  -e "DEBUG=1" \
+  ghcr.io/diogopms/monit-docker
 ```

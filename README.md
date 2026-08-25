@@ -1,64 +1,89 @@
-# Monit - Docker/Kubernetes - UNIX Systems Management
+# monit-docker
 
-Run Monit inside docker ( )
+[![Release](https://github.com/diogopms/monit-docker/actions/workflows/release.yml/badge.svg)](https://github.com/diogopms/monit-docker/actions/workflows/release.yml)
+[![CI](https://github.com/diogopms/monit-docker/actions/workflows/ci.yml/badge.svg)](https://github.com/diogopms/monit-docker/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/diogopms/monit-docker)](https://github.com/diogopms/monit-docker/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[![Monit](https://mmonit.com/monit/img/logo.png)](https://mmonit.com/monit/)
+[Monit](https://mmonit.com/monit/) packaged as a small Alpine-based Docker image, with built-in [Slack](https://slack.com) and [Pushover](https://pushover.net) notification scripts.
 
-[Monit](https://mmonit.com/monit/) is a free open source utility for managing and monitoring, processes, programs, files, directories and filesystems on a UNIX system. Monit conducts automatic maintenance and repair and can execute meaningful causal actions in error situations.
+Monit is a free open-source utility for managing and monitoring processes, programs, files, directories and filesystems on UNIX systems. It conducts automatic maintenance and repair and can execute meaningful causal actions in error situations.
 
-## Supported architectures
-
-- amd64
-- arm32v6 (Raspberry Pi) [diogopms/monit-docker-kubernetes:arm32v6-latest](https://hub.docker.com/r/diogopms/monit-docker-kubernetes/tags?page=1&name=arm)
-
-## Docker setup
-
-Install docker: https://docs.docker.com/engine/installation/
-Install docker compose: https://docs.docker.com/compose/install/
-Docker documentation: https://docs.docker.com/
-
-### Build-in docker image
-
-- build docker image `docker build -t monit .`
-- start monit: `docker run -ti -p 2812:2812 -v $(pwd)/monitrc:/etc/monitrc monit`
-
-## ENV VARS
-
-| ENVs            	| Description                                              	|
-|-----------------	|----------------------------------------------------------	|
-| SLACK_URL       	| Webhook url for slack notifications (required for slack) 	|
-| PUSH_OVER_TOKEN 	| Push over api token (required for pushover)              	|
-| PUSH_OVER_USER  	| Push over api user (requiredfor pushover)                	|
-| DEBUG           	| If set with 1 it will put monit in verbose mode          	|
-
-### Docker Hub image
-
-- pull docker image from docker hub: `docker pull diogopms/monit-docker-kubernetes`
-- start monit: `docker run -ti -p 2812:2812 -v $(pwd)/monitrc:/etc/monitrc diogopms/monit-docker-kubernetes`
-- create a docker container:
+## Image
 
 ```
-#Normal mode (support slack and pushover)
-docker run -it \
+ghcr.io/diogopms/monit-docker
+```
+
+| Tag | Meaning |
+|---|---|
+| `latest` | Latest release |
+| `X` | Latest release in that major version |
+| `X.Y` | Latest release in that minor version |
+| `X.Y.Z` | Exact release |
+
+Supported platforms: `linux/amd64`, `linux/arm64` (Raspberry Pi 3/4/5 with a 64-bit OS).
+
+## Quick start
+
+Write a `monitrc` (see [samples/](samples/) and the examples below), then:
+
+```sh
+docker run -d \
   -p 2812:2812 \
-  -v $(pwd)/monitrc:/etc/monitrc \
+  -v "$(pwd)/monitrc:/etc/monitrc" \
+  ghcr.io/diogopms/monit-docker
+```
+
+Or with Docker Compose ([docker-compose.yaml](docker-compose.yaml)):
+
+```yaml
+services:
+  monit:
+    image: ghcr.io/diogopms/monit-docker:latest
+    container_name: monit
+    environment:
+      - TZ=Europe/Lisbon
+    volumes:
+      - ./monitrc:/etc/monitrc
+    ports:
+      - 2812:2812
+    restart: unless-stopped
+```
+
+To use Monit's web interface, uncomment `set httpd port 2812` in your `monitrc` and open http://localhost:2812.
+
+## Configuration
+
+Mount your Monit control file at `/etc/monitrc`. The entrypoint copies it to a root-owned file with `0700` permissions before starting Monit (Monit refuses configs with looser permissions), so you don't need to fix permissions on the host.
+
+### Environment variables
+
+| Variable | Description |
+|---|---|
+| `SLACK_URL` | Slack incoming-webhook URL (required for `/bin/slack`) |
+| `PUSH_OVER_TOKEN` | Pushover API token (required for `/bin/pushover`) |
+| `PUSH_OVER_USER` | Pushover API user key (required for `/bin/pushover`) |
+| `DEBUG` | Set to `1` to run Monit in verbose mode |
+
+```sh
+docker run -d \
+  -p 2812:2812 \
+  -v "$(pwd)/monitrc:/etc/monitrc" \
   -e "SLACK_URL=<SLACK_URL>" \
   -e "PUSH_OVER_TOKEN=<PUSH_OVER_TOKEN>" \
   -e "PUSH_OVER_USER=<PUSH_OVER_USER>" \
-  diogopms/monit-docker-kubernetes
-
-#Debug mode
-docker run -it \
-  -p 2812:2812 \
-  -v $(pwd)/monitrc:/etc/monitrc \
-  -e "SLACK_URL=<SLACK_URL>" \
-  -e "PUSH_OVER_TOKEN=<PUSH_OVER_TOKEN>" \
-  -e "PUSH_OVER_USER=<PUSH_OVER_USER>" \
-  -e "DEBUG=1" \
-  diogopms/monit-docker-kubernetes
+  ghcr.io/diogopms/monit-docker
 ```
 
-### Example monitrc (Slack)
+## Notifications
+
+The image ships two notification scripts you can call from `exec` actions in your `monitrc`:
+
+- `/bin/slack` — posts the Monit event to a Slack incoming webhook (`SLACK_URL`)
+- `/bin/pushover` — sends the Monit event via Pushover (`PUSH_OVER_TOKEN` + `PUSH_OVER_USER`)
+
+### Example `monitrc` (Slack)
 
 ```
 set daemon 20
@@ -74,10 +99,9 @@ check host www.google.com with address www.google.com
       for 2 cycles
   then exec "/bin/slack"
     else if succeeded then exec "/bin/slack"
-EOF
 ```
 
-### Example monitrc (Pushover)
+### Example `monitrc` (Pushover)
 
 ```
 set daemon 20
@@ -93,16 +117,32 @@ check host www.google.com with address www.google.com
       for 2 cycles
   then exec "/bin/pushover"
     else if succeeded then exec "/bin/pushover"
-EOF
 ```
 
-### Supported notifications
+More examples in [samples/](samples/).
 
-- [Slack](https://www.slack.com)
-- [Pushover](https://pushover.net)
+## Building locally
 
-### Kubernetes
+```sh
+docker build -t monit .
+docker run -d -p 2812:2812 -v "$(pwd)/monitrc:/etc/monitrc" monit
+```
 
-### Troubleshooting
+The build compiles Monit from source (checksum-verified) in a builder stage and ships only the compiled binary plus runtime dependencies.
 
-If when starting Monit returns the following message: `The control file '/etc/monitrc' permission 0755 is wrong, maximum 0700 allowed`, simply give the appropriate permissions to _monitrc_: `chmod 700 monitrc`.
+## Releases & versioning
+
+Versions follow [SemVer](https://semver.org/) driven by [Conventional Commits](https://www.conventionalcommits.org/):
+
+- A scheduled workflow runs monthly; if any `feat`/`fix`/breaking commit landed since the last tag, it builds and pushes the multi-arch image to GHCR, then creates the git tag and GitHub Release.
+- `fix:` → patch, `feat:` → minor, `feat!:`/`BREAKING CHANGE` → major. Anything else does not release.
+- A release can be forced manually: Actions → Release → "Run workflow" → pick a bump level.
+
+## Troubleshooting
+
+- **`The control file '/etc/monitrc' permission 0755 is wrong, maximum 0700 allowed`** — the entrypoint normally handles this; if you run Monit against the mounted file directly, run `chmod 700 monitrc` on the host.
+- **Verbose logging** — set `DEBUG=1` to start Monit with `-v`.
+
+## License
+
+[MIT](LICENSE)
