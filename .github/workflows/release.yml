@@ -167,7 +167,7 @@ jobs:
       # QEMU lets buildx cross-compile the arm64 variant on the amd64 runner.
       - name: Set up QEMU
         if: steps.tag.outputs.new_version
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
         if: steps.tag.outputs.new_version
