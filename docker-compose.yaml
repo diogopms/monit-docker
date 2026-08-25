@@ -1,12 +1,9 @@
 ---
-version: "3.8"
 services:
   monit:
-    image: diogopms/monit-docker-kubernetes:latest
+    image: ghcr.io/diogopms/monit-docker:latest
     container_name: monit
     environment:
-      - PUID=1000
-      - PGID=1000
       - TZ=Europe/Lisbon
     volumes:
       - ./monitrc:/etc/monitrc
