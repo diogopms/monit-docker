@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM alpine:3.24.1 AS builder
+FROM alpine:3.24.2 AS builder
 
 ENV MONIT_VERSION=6.0.0 \
     MONIT_SHA256=ddacd2a8120aeb2351e4486ee04a17782b5004aee99f2041d829bc4dcf2a5b3b \
@@ -21,7 +21,7 @@ RUN ./configure --prefix=/opt/monit --without-pam && \
     make -j"$(nproc)" && \
     make install
 
-FROM alpine:3.24.1
+FROM alpine:3.24.2
 
 ENV MONIT_VERSION=6.0.0 \
     MONIT_HOME=/opt/monit \
