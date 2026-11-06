@@ -7,7 +7,7 @@ https://www.google.com and notifies Slack on state changes.
 
 ```sh
 docker run -it \
-  -p 2812:2812 \
+  -p 127.0.0.1:2812:2812 \
   -v "$(pwd)/monitrc:/etc/monitrc" \
   -e "SLACK_URL=<SLACK_URL>" \
   -e "PUSH_OVER_TOKEN=<PUSH_OVER_TOKEN>" \
@@ -21,7 +21,7 @@ Add `-e "DEBUG=1"` to run Monit in verbose mode:
 
 ```sh
 docker run -it \
-  -p 2812:2812 \
+  -p 127.0.0.1:2812:2812 \
   -v "$(pwd)/monitrc:/etc/monitrc" \
   -e "SLACK_URL=<SLACK_URL>" \
   -e "DEBUG=1" \

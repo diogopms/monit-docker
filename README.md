@@ -30,7 +30,7 @@ Write a `monitrc` (see [samples/](samples/) and the examples below), then:
 
 ```sh
 docker run -d \
-  -p 2812:2812 \
+  -p 127.0.0.1:2812:2812 \
   -v "$(pwd)/monitrc:/etc/monitrc" \
   ghcr.io/diogopms/monit-docker
 ```
@@ -47,11 +47,17 @@ services:
     volumes:
       - ./monitrc:/etc/monitrc
     ports:
-      - 2812:2812
+      - 127.0.0.1:2812:2812
     restart: unless-stopped
 ```
 
-To use Monit's web interface, uncomment `set httpd port 2812` in your `monitrc` and open http://localhost:2812.
+To use Monit's web interface, uncomment `set httpd port 2812` in your `monitrc`, set your own `allow <user>:<strong-password>` line, and open http://localhost:2812.
+
+### Security
+
+- The web interface is off by default. Turn it on only with your own login, never Monit's well-known `admin:monit` default.
+- The examples publish port 2812 on `127.0.0.1` only. To reach it from other machines, put it behind a reverse proxy with TLS or a VPN instead of publishing it on every interface.
+- Monit's command-line client (`monit status`, `monit restart …`) talks to the web interface, so it needs httpd turned on too.
 
 ## Configuration
 
@@ -68,7 +74,7 @@ Mount your Monit control file at `/etc/monitrc`. The entrypoint copies it to a r
 
 ```sh
 docker run -d \
-  -p 2812:2812 \
+  -p 127.0.0.1:2812:2812 \
   -v "$(pwd)/monitrc:/etc/monitrc" \
   -e "SLACK_URL=<SLACK_URL>" \
   -e "PUSH_OVER_TOKEN=<PUSH_OVER_TOKEN>" \
@@ -89,7 +95,7 @@ The image ships two notification scripts you can call from `exec` actions in you
 set daemon 20
 set log syslog
 # Web interface
-# set httpd port 2812 and allow admin:monit
+# set httpd port 2812 and allow <user>:<strong-password>
 
 check host www.google.com with address www.google.com
   if failed
@@ -107,7 +113,7 @@ check host www.google.com with address www.google.com
 set daemon 20
 set log syslog
 # Web interface
-# set httpd port 2812 and allow admin:monit
+# set httpd port 2812 and allow <user>:<strong-password>
 
 check host www.google.com with address www.google.com
   if failed
@@ -125,7 +131,7 @@ More examples in [samples/](samples/).
 
 ```sh
 docker build -t monit .
-docker run -d -p 2812:2812 -v "$(pwd)/monitrc:/etc/monitrc" monit
+docker run -d -p 127.0.0.1:2812:2812 -v "$(pwd)/monitrc:/etc/monitrc" monit
 ```
 
 The build compiles Monit from source (checksum-verified) in a builder stage and ships only the compiled binary plus runtime dependencies.
